@@ -31,14 +31,16 @@ class Rect:
     def size(self):
         return (self.width,self.height)
 class Slots:
-    def __init__(self,rect:Rect,source:pygame.image,name) -> None:
+    def __init__(self,rect:Rect,source:pygame.surface.Surface,name,distance,trace_distance) -> None:
         self.rect = rect 
         self.source = source
         self.name = name
         self.source = pygame.transform.scale(self.source,self.rect.size())
         self.dy = self.rect.y
-    def calculate_pos(self,ds):
-        self.rect.y+=ds 
+        self.distance = distance
+        self.trace_distance = 0
+    def calculate_pos(self,pt):
+        self.rect.y = util.smoooth_step(0,self.distance,pt)
     def render(self,surface:pygame.Surface):
         surface.blit(self.source,self.rect.pos())
 class Reel:
@@ -46,7 +48,7 @@ class Reel:
         self.items = []
         
         for i,val in enumerate(list(items.items())):
-            self.items.append(Slots(Rect(0,1000-i*200,200,200),pygame.image.load(val[1]),name=val[0])) 
+            self.items.append(Slots(Rect(0,1000-i*200,200,200),pygame.image.load(val[1]),name=val[0],distance=4500,trace_distance=0)) 
     def render(self,surface:pygame.Surface,pt,dt):    
         ds = util.dsmooth_step_by_x(pt,0,300)*dt
         dss = ds
@@ -58,10 +60,10 @@ class Reel:
         #         # print(i,item.rect.y)
         #         item.calculate_pos(clamped)
         for i, item in enumerate(self.items):
-            item.calculate_pos(ds)
+            item.calculate_pos(pt)
         if self.items[0].rect.y>1000:
             t = self.items.pop(0)
-            self.items.append(Slots(Rect(0,-200-(1000-t.rect.y),200,200),t.source,name=t.name)) 
+            self.items.append(Slots(Rect(0,-200-(1000-t.rect.y),200,200),t.source,name=t.name,distance=t.distance,trace_distance=t.trace_distance)) 
         for i in self.items:
             i.render(surface)
 class Machine:
