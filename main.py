@@ -1,4 +1,5 @@
 import pygame
+import math
 import json
 from dataclasses import dataclass
 import sys
@@ -27,7 +28,7 @@ class Rect:
     def convert(self):
         return (self.x,self.y,self.width,self.height)
     def pos(self):
-        return (self.x,self.y)
+        return (self.x,round(self.y))
     def size(self):
         return (self.width,self.height)
 class Slots:
@@ -48,7 +49,7 @@ class Reel:
         for i,val in enumerate(list(items.items())):
             self.items.append(Slots(Rect(0,1000-i*200,200,200),pygame.image.load(val[1]),name=val[0])) 
     def render(self,surface:pygame.Surface,pt,dt):    
-        ds = util.dsmooth_step_by_x(pt,0,300)*dt
+        ds = util.dsmooth_step_by_x(pt,0,3000)*dt
         dss = ds
         # extra iteration in order for it to not spasm away
         # for i in range(int((ds//SPASM_CONSTANT)+1)):       
@@ -75,7 +76,7 @@ class Machine:
         self.clock = pygame.time.Clock()
         self.dt = 0
         self.t = 10
-        self.frame_cap = 1.0/15
+        self.frame_cap = 1.0/60
         self.time1 = time.perf_counter()
         self.unprocessed = 0
         self.can_render = False
@@ -104,7 +105,6 @@ class Machine:
                         print(self.t_exe)
                         for i,item in enumerate(self.reel.items):
                             print(i,item.rect.y,item.name)
-
                         sys.exit()
                     # normal setting part
                     self.screen.fill(WHITE)
