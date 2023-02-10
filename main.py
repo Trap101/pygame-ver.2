@@ -45,11 +45,11 @@ class Slots:
 class Reel:
     def __init__(self,items:dict) -> None:
         self.items = []
-        
+        self.collected = 0 
         for i,val in enumerate(list(items.items())):
             self.items.append(Slots(Rect(0,1000-i*200,200,200),pygame.image.load(val[1]),name=val[0])) 
     def render(self,surface:pygame.Surface,pt,dt):    
-        ds = util.dsmooth_step_by_x(pt,0,3000)*dt
+        ds = util.dsmooth_step_by_x(pt,0,300)*dt
         dss = ds
         # extra iteration in order for it to not spasm away
         # for i in range(int((ds//SPASM_CONSTANT)+1)):       
@@ -58,6 +58,7 @@ class Reel:
         #     for i,item in enumerate(self.items):
         #         # print(i,item.rect.y)
         #         item.calculate_pos(clamped)
+        self.collected+=ds
         for i, item in enumerate(self.items):
             item.calculate_pos(ds)
         if self.items[0].rect.y>1000:
@@ -103,6 +104,7 @@ class Machine:
                         self.reel.render(self.surface,self.st/self.t,self.f_p)
                     else:
                         print(self.t_exe)
+                        print(self.reel.collected)
                         for i,item in enumerate(self.reel.items):
                             print(i,item.rect.y,item.name)
                         sys.exit()
