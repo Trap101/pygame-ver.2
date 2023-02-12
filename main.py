@@ -36,11 +36,12 @@ class Slots:
         self.source = source
         self.name = name
         self.source = pygame.transform.scale(self.source,self.rect.size())
-        self.dy = self.rect.y
+        self.s_y = self.rect.y
         self.distance = distance
         self.trace_distance = 0
+        self.offset = 1000-self.s_y
     def calculate_pos(self,pt):
-        self.rect.y = util.smoooth_step(0,self.distance,pt)
+        self.rect.y = (util.smoooth_step(0,self.distance,pt)%1000)+self.offset
     def render(self,surface:pygame.Surface):
         surface.blit(self.source,self.rect.pos())
 class Reel:
@@ -77,7 +78,7 @@ class Machine:
         self.clock = pygame.time.Clock()
         self.dt = 0
         self.t = 10
-        self.frame_cap = 1.0/15
+        self.frame_cap = 1.0/60
         self.time1 = time.perf_counter()
         self.unprocessed = 0
         self.can_render = False
