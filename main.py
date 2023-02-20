@@ -39,9 +39,9 @@ class Slots:
         self.source = pygame.transform.scale(self.source,self.rect.size())
         self.dy = self.rect.y
     def calculate_pos(self,ds):
-        self.rect.y+=ds 
+        self.rect.y +=ds 
     def render(self,surface:pygame.Surface):
-        surface.blit(self.source,self.rect.pos())
+        surface.blit(self.source,(self.rect.x,round(self.rect.y)))
 class Reel:
     def __init__(self,items:dict) -> None:
         self.items = []
