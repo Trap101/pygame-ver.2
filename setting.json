@@ -1,9 +1,9 @@
 {
-  "window_size": [800, 800],
+  "window_size": [1000, 800],
   "main_square": [600, 600],
   "items":{"cherry": "./resources/cherry.jpeg", "lemon": "./resources/lemon.png", "star": "./resources/star.png", "skull": "./resources/skull.png",
         "bell": "./resources/bell.png", "orange": "./resources/orange.png"},
-  "overshoot1":1.4,
-  "overshoot2":1.1
+  "reel_num":3,
+  "spasm_constant":200
 
 }
