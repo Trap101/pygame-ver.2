@@ -1,9 +1,16 @@
-import pygame,json,sys,time,util,menu,enum,random
+import pygame,json,sys,time,util,menu,random
+import numpy as np
 from dataclasses import dataclass
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 pygame.init()
 result = {2:{"skull":-100,"else":50},3:{"else":100,"bell":500,"skull":"f"}}
+table = {"cherry":0.15,"lemon":0.15,"bell":0.05,"orange":0.15,"star":0.15,"skull":0.35}
+t = ["cherry","lemon","star","skull","bell","orange"]
+def gen(table:dict):
+    value = list(table.keys())
+    chance = list(table.values())
+    return np.random.choice(value,1,p=chance)
 # CENTRE_SQUARE = (100, 100, 600, 400)
 # screen = pygame.display.set_mode([WIDTH_SCREEN, HEIGHT_SCREEN])
 # Running = True
@@ -11,6 +18,19 @@ result = {2:{"skull":-100,"else":50},3:{"else":100,"bell":500,"skull":"f"}}
 # clock = pygame.time.Clock()
 # dt = 0
 # drawsurface = pygame.Surface((600, 400))\
+
+def calculate_offset(current,target,l:list):
+    if current not in l or target not in l:
+        print(target)
+        print(current)
+        raise IndexError
+    else:
+        c_index = l.index(current)
+        t_index = l.index(target)
+        if t_index >= c_index:
+            return t_index-c_index
+        elif t_index < c_index:
+            return 6-c_index+t_index 
 class Slots:
     def __init__(self,rect:pygame.Rect,source:pygame.surface.Surface,name,distance) -> None:
         self.rect = rect 
@@ -33,13 +53,18 @@ class Slots:
 class Reel:
     def __init__(self,items:dict,x,setting=None) -> None:
         self.items = []
-        self.x = x 
+        self.x = x
         ## base distance + random
-        self.reroll()
+        self.distance = 0
         for i,val in enumerate(list(items.items())):
             self.items.append(Slots(pygame.Rect(x,1000-i*200,200,200),pygame.image.load(val[1]),name=val[0],distance=self.distance))             
+        self.re_init()
     def reroll(self):
-        self.distance = 7000+random.randint(0,6)*200
+        result = gen(table)
+        print(result)
+        offset = calculate_offset(self.c_result(),result,t) 
+        self.distance = 7000+offset*200+200
+        print(self.distance)
     def re_init(self):
         self.reroll()
         for i in self.items:
@@ -69,6 +94,7 @@ class Reel:
 class Machine:
     def __init__(self,setting:dict) -> None:
         items = setting["items"]
+        self.items = list(items.keys())
         self.moving = False
         self.screen = pygame.display.set_mode(setting["window_size"]) 
         self.surface= pygame.Surface(setting["main_square"])
@@ -83,6 +109,7 @@ class Machine:
         self.unprocessed = 0
         self.st = 0
         self.f_p = 0
+        self.lost = False
         self.button = menu.button(pygame.rect.Rect(775,300,150,100)) 
         for i in self.reels:
             self.button.add_false_event(i.re_init)
@@ -104,11 +131,13 @@ class Machine:
             if number in result:
                 if name in result[number]:
                     if result[number][name] == "f":
-                        print("break")
+                        self.lost = True
                     else:
                         self.money += result[number][name]
                 else:
                     self.money+=result[number]["else"]
+            if self.money <=20:
+                self.lost = True
                     
                     
 
@@ -139,8 +168,6 @@ class Machine:
                         self.st = 0
                         self.button.mouseDown = False
                         self.result()
-                        print(self.winning)
-                        self.button.mouseDown= True
                         
                         
                         

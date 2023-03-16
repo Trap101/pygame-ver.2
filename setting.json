@@ -4,6 +4,6 @@
   "items":{"cherry": "./resources/cherry.jpeg", "lemon": "./resources/lemon.png", "star": "./resources/star.png", "skull": "./resources/skull.png",
         "bell": "./resources/bell.png", "orange": "./resources/orange.png"},
   "reel_num":3,
-  "spasm_constant":200
-
+  "spasm_constant":200,
+  "randomness":{"cherry":0.1,"lemon":0.1,"bell":0.05,"orange":0.1,"star":0.1,"skull":0.55}
 }
